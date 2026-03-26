@@ -168,3 +168,13 @@ def create_ol_node(block):
         children = text_to_children(text)
         html_items.append(ParentNode("li", children))
     return ParentNode("ol", html_items)
+
+def extract_title(markdown):
+    lines = markdown.split("\n")
+
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+
+    raise Exception("No h1 header found in markdown")
+
