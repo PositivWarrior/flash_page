@@ -52,19 +52,33 @@ def recursive_copy(src, dst):
             os.mkdir(dest_path)
             recursive_copy(source_path, dest_path)
 
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    entries = os.listdir(dir_path_content)
+
+    for entry in entries:
+        from_path = os.path.join(dir_path_content, entry)
+        dest_path = os.path.join(dest_dir_path, entry)
+
+        if os.path.isfile(from_path):
+            if entry.endswith(".md"):
+                dest_html_path = dest_path.replace(".md", ".html")
+                generate_page(from_path, template_path, dest_html_path)
+        else:
+            os.makedirs(dest_path, exist_ok=True)
+            generate_pages_recursive(from_path, template_path, dest_path)
+
 def main():
     static_path = "./static"
     public_path = "./public"
+    content_path = "./content"
+    template_path = "./template.html"
 
-    print("Starting static sync...")
+    print("Starting sync and generation...")
     copy_static_files_to_public(static_path, public_path)
 
-    print("Generating index page...")
-    generate_page(
-        "content/index.md",
-        "template.html",
-        "public/index.html"
-    )
+    generate_pages_recursive(content_path, template_path, public_path)
+
+    print("Build finieshed successfully!")
 
 if __name__ == "__main__":
     main()
